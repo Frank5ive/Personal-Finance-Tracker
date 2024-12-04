@@ -1,0 +1,36 @@
+body {
+    background-color: #f8fafc;
+    font-family: 'Arial', sans-serif;
+  }
+  .navbar-brand img {
+    height: 32px;
+  }
+  .hero-section {
+    background-color: #f1f5f9;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  .hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  .hero-section p {
+    font-size: 1.2rem;
+    color: #64748b;
+  }
+  .feature-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 20px;
+  }
+  .feature-card img {
+    height: 64px;
+    margin-bottom: 16px;
+  }
+  .cta-buttons .btn {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+  }
+  
