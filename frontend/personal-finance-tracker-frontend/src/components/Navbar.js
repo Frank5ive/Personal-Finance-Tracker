@@ -15,7 +15,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 py-3">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand">
           <img src="logo-placeholder.png" alt="App Logo" className="me-2" />
           <span>Finance Tracker</span>
         </a>
