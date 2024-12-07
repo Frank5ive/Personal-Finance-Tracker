@@ -1,27 +1,27 @@
-const mysql = require('mysql2/promise'); // Import mysql2 with promise support
-require('dotenv').config(); // Load environment variables
+const { Sequelize } = require("sequelize");
+require("dotenv").config(); 
 
-// Create a connection pool using environment variables
-const db = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',  // Database host, default to localhost
-  user: process.env.DB_USER || 'root',      // Database user, default to root
-  password: process.env.DB_PASSWORD || '',  // Database password, default to empty
-  database: process.env.DB_NAME || 'finance_tracker', // Database name
-  waitForConnections: true,                 // Enable connection queue
-  connectionLimit: 10,                      // Max connections in the pool
-  queueLimit: 0                             // No queue limit
-});
+// Initialize Sequelize instance
+const sequelize = new Sequelize(
+  process.env.DB_NAME || "finance_tracker", 
+  process.env.DB_USER || "root", 
+  process.env.DB_PASSWORD || "", 
+  {
+    host: process.env.DB_HOST || "localhost",
+    dialect: "mysql", 
+    logging: false, 
+  }
+);
 
-// Test the database connection on app startup
+// Test Database Connection
 (async () => {
   try {
-    const connection = await db.getConnection();
+    await sequelize.authenticate();
     console.log("Connected to the MySQL database successfully!");
-    connection.release(); // Release the connection back to the pool
   } catch (error) {
     console.error("Failed to connect to the MySQL database:", error);
-    process.exit(1); // Exit the process if the connection fails
+    process.exit(1); // Exit if connection fails
   }
 })();
 
-module.exports = db; // Export the db connection pool
+module.exports = sequelize;
