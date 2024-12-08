@@ -2,6 +2,7 @@ const express = require("express");
 const sequelize = require("./config/db");  // Sequelize connection
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const transactions = require("./routes/transactionRoutes"); 
 
 const app = express();
 app.use(express.json());
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/transaction", transactions);
 
 // Catch-All for Unknown Routes
 app.use((req, res) => {
