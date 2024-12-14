@@ -1,10 +1,21 @@
 const express = require("express");
+const cors = require("cors");
 const sequelize = require("./config/db");  // Sequelize connection
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-const transactions = require("./routes/transactionRoutes"); 
+const transactions = require("./routes/transactionRoutes");
+const categories = require("./routes/categoryRoutes");
+const report = require("./routes/reportRoutes");
+const Notification = require("./routes/notificationRoutes"); 
 
 const app = express();
+
+// Enable CORS for Frontend
+app.use(cors({
+  origin: "http://localhost:3000",  // Frontend URL
+  credentials: true,  // Allow cookies
+}));
+
 app.use(express.json());
 
 // Test Database Connection and Sync Models
@@ -24,9 +35,12 @@ app.get("/", (req, res) => {
 });
 
 // API Routes
+app.use("/api/categories", categories);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/transaction", transactions);
+app.use("/api/report", report);
+app.use("/api/notification", Notification);
 
 // Catch-All for Unknown Routes
 app.use((req, res) => {
