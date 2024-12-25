@@ -49,8 +49,6 @@ function App() {
         </Route>
       </Routes>
 
-      {/* Footer Component */}
-      <Footer />
     </Router>
   );
 }
