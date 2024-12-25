@@ -4,7 +4,7 @@ import { signup } from "../Services/authService"; // Import the signup function
 
 const SignUpModal = ({ show, handleClose }) => {
   // Form state
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState(""); // Updated from 'name' to 'username'
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
@@ -14,7 +14,7 @@ const SignUpModal = ({ show, handleClose }) => {
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "name") setName(value);
+    if (name === "username") setUsername(value); // Updated from 'name' to 'username'
     if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
     if (name === "confirmPassword") setConfirmPassword(value); // Handle confirm password change
@@ -34,7 +34,7 @@ const SignUpModal = ({ show, handleClose }) => {
     }
 
     try {
-      const userData = { name, email, password };
+      const userData = { username, email, password }; // Updated from 'name' to 'username'
       await signup(userData); // Call signup service
       setLoading(false);
       handleClose(); // Close the modal after successful signup
@@ -52,13 +52,13 @@ const SignUpModal = ({ show, handleClose }) => {
       <Modal.Body>
         {error && <Alert variant="danger">{error}</Alert>} {/* Display error message */}
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formName">
-            <Form.Label>Name</Form.Label>
+          <Form.Group className="mb-3" controlId="formUsername">
+            <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter your name"
-              name="name"
-              value={name}
+              placeholder="Enter your username"
+              name="username" // Updated from 'name' to 'username'
+              value={username}
               onChange={handleChange}
             />
           </Form.Group>

@@ -1,10 +1,20 @@
 import api from './api';
 
+// Get summary for the last 30 days
+export const getSummary = async () => {
+  try {
+    const response = await api.get("/transaction/summary", { withCredentials: true });
+    return response || {};
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch summary.");
+  }
+};
+
 // Fetch Transactions
 export const getTransactions = async () => {
   try {
     const response = await api.get('/transaction/list', { withCredentials: true });
-    return response.data;
+    return response || [];
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch transactions.");
   }
@@ -14,7 +24,7 @@ export const getTransactions = async () => {
 export const getTransactionsByUserId = async (userId) => {
   try {
     const response = await api.get(`/transaction/user/${userId}`, { withCredentials: true });
-    return response.data;
+    return response || [];
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch user transactions.");
   }
@@ -24,7 +34,7 @@ export const getTransactionsByUserId = async (userId) => {
 export const addTransaction = async (transactionData) => {
   try {
     const response = await api.post('/transaction/add', transactionData, { withCredentials: true });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to add transaction.");
   }
@@ -34,7 +44,7 @@ export const addTransaction = async (transactionData) => {
 export const updateTransaction = async (transactionId, updatedData) => {
   try {
     const response = await api.put(`/transaction/update/${transactionId}`, updatedData, { withCredentials: true });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to update transaction.");
   }

@@ -4,7 +4,7 @@ import api from './api';
 export const getCategories = async () => {
   try {
     const response = await api.get('/categories', { withCredentials: true });
-    return response.data;
+    return response || [];
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch categories.");
   }
@@ -14,7 +14,7 @@ export const getCategories = async () => {
 export const addCategory = async (categoryData) => {
   try {
     const response = await api.post('/categories', categoryData, { withCredentials: true });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to add category.");
   }
@@ -24,7 +24,7 @@ export const addCategory = async (categoryData) => {
 export const updateCategory = async (categoryId, updatedData) => {
   try {
     const response = await api.put(`/categories/${categoryId}`, updatedData, { withCredentials: true });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to update category.");
   }

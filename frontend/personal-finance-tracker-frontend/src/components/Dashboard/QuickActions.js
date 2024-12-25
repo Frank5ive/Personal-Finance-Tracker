@@ -1,23 +1,58 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { addTransaction, getSummary } from "../../Services/transactionService";
 
 const QuickActions = () => {
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-  const [modalContent, setModalContent] = useState(""); // State to control modal content
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [reports, setReports] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  // Function to handle button clicks and set the modal content
   const handleActionClick = (action) => {
     setModalContent(action);
     setShowModal(true);
+    setMessage(null);
+    if (action === "View Reports") {
+      fetchReports();
+    }
   };
 
-  // Function to close the modal
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    setShowModal(false);
+    setAmount("");
+    setDescription("");
+    setReports(null);
+  };
 
-  // Function to handle form submission (mock function)
-  const handleSubmit = () => {
-    alert(`${modalContent} submitted!`);
-    setShowModal(false); // Close the modal after submission
+  const fetchReports = async () => {
+    try {
+      const summary = await getSummary();
+      setReports(summary || {});
+    } catch (error) {
+      setReports(null);
+      setMessage({ type: "error", text: "Error fetching reports." });
+    }
+  };
+
+  const handleSubmit = async () => {
+    setMessage(null);
+    if (modalContent === "Add Income" || modalContent === "Add Expense") {
+      const transactionData = {
+        type: modalContent === "Add Income" ? "income" : "expense",
+        amount: parseFloat(amount),
+        category: description,
+      };
+
+      try {
+        await addTransaction(transactionData);
+        setMessage({ type: "success", text: "Transaction added successfully!" });
+        handleClose();
+      } catch (error) {
+        setMessage({ type: "error", text: error.message });
+      }
+    }
   };
 
   return (
@@ -46,47 +81,61 @@ const QuickActions = () => {
         </div>
       </div>
 
-      {/* Modal for displaying forms */}
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{modalContent}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Content of the modal based on the selected action */}
-          {modalContent === "Add Income" && (
+          {modalContent === "Add Income" || modalContent === "Add Expense" ? (
             <div>
               <label>Amount</label>
-              <input type="number" className="form-control" placeholder="Enter amount" />
+              <input
+                type="number"
+                className="form-control"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
               <label>Description</label>
-              <input type="text" className="form-control" placeholder="Enter description" />
+              <input
+                type="text"
+                className="form-control"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </div>
-          )}
-
-          {modalContent === "Add Expense" && (
-            <div>
-              <label>Amount</label>
-              <input type="number" className="form-control" placeholder="Enter amount" />
-              <label>Description</label>
-              <input type="text" className="form-control" placeholder="Enter description" />
-            </div>
-          )}
-
-          {modalContent === "View Reports" && (
-            <div>
-              <p>Generate financial reports here.</p>
-              {/* Placeholder content, you can add dynamic reports logic here */}
-            </div>
-          )}
+          ) : modalContent === "View Reports" ? (
+            reports ? (
+              Object.keys(reports).length > 0 ? (
+                <>
+                  <p>Total Income: ${reports.totalIncome}</p>
+                  <p>Total Expense: ${reports.totalExpense}</p>
+                  <p>Net Balance: ${reports.netBalance}</p>
+                </>
+              ) : (
+                <p>No report data available.</p>
+              )
+            ) : (
+              <p>Loading reports...</p>
+            )
+          ) : null}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Submit
-          </Button>
+          {(modalContent === "Add Income" || modalContent === "Add Expense") && (
+            <Button variant="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
+
+      {message && (
+        <div className={`alert mt-3 ${message.type === "success" ? "alert-success" : "alert-danger"}`}>
+          {message.text}
+        </div>
+      )}
     </div>
   );
 };

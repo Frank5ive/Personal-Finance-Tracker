@@ -99,11 +99,65 @@ const getTransactionsByUserId = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
-
+  const getSummary = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30); // 30 days ago
+  
+      // Fetch all transactions from the last 30 days
+      const transactions = await Transaction.findAll({
+        where: {
+          userId,
+          date: {
+            [Op.gte]: thirtyDaysAgo.toISOString().split('T')[0], // Compare with the start of the last 30 days
+          },
+        },
+      });
+  
+      let totalIncome = 0;
+      let totalExpenses = 0;
+  
+      // Calculate total income and expenses
+      transactions.forEach((transaction) => {
+        if (transaction.type === 'income') {
+          totalIncome += parseFloat(transaction.amount);
+        } else if (transaction.type === 'expense') {
+          totalExpenses += parseFloat(transaction.amount);
+        }
+      });
+  
+      // Calculate balance
+      const balance = totalIncome - totalExpenses;
+  
+      // Calculate percentage change for income and expenses
+      const incomeChange = transactions.length
+        ? ((totalIncome / transactions[0].amount - 1) * 100).toFixed(2)
+        : 0;
+  
+      const expensesChange = transactions.length
+        ? ((totalExpenses / transactions[0].amount - 1) * 100).toFixed(2)
+        : 0;
+  
+      // Send the summary data
+      res.status(200).json({
+        balance,
+        income: totalIncome,
+        expenses: totalExpenses,
+        incomeChange: incomeChange,
+        expensesChange: expensesChange,
+      });
+    } catch (error) {
+      console.error('Error fetching summary data:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
+  
 module.exports = {
   addTransaction,
   updateTransaction,
   deleteTransaction,
   getTransactions,
   getTransactionsByUserId,
+  getSummary,
 };

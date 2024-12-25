@@ -7,7 +7,7 @@ export const getIncomeStatement = async (startDate, endDate, format) => {
       params: { startDate, endDate, format },
       withCredentials: true
     });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch income statement.");
   }
@@ -20,7 +20,7 @@ export const getCashFlowStatement = async (startDate, endDate, format) => {
       params: { startDate, endDate, format },
       withCredentials: true
     });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch cash flow statement.");
   }
@@ -33,7 +33,7 @@ export const getBalanceSheet = async (date, format) => {
       params: { date, format },
       withCredentials: true
     });
-    return response.data;
+    return response || {};
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch balance sheet.");
   }
