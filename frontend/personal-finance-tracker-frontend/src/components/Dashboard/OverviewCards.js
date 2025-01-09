@@ -8,6 +8,7 @@ const OverviewCards = () => {
     const fetchSummary = async () => {
       try {
         const data = await getSummary();
+        console.log(data);
         setSummary(data || {});
       } catch (error) {
         console.error("Error fetching summary:", error.message);
