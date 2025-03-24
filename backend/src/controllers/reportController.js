@@ -1,6 +1,5 @@
 const Transaction = require('../models/Transaction');
 const exportHelper = require('../utils/exportHelper');
-const { Op } = require('sequelize');
 const { plotGraph } = require('../utils/plotHelper'); // Graph plotting utility
 
 // Income Statement - Calculates Revenues, Expenses, and Net Income for a given period
@@ -9,13 +8,9 @@ exports.generateIncomeStatement = async (req, res) => {
     const { startDate, endDate, format } = req.query;
 
     // Fetch transactions within the date range for the user
-    const transactions = await Transaction.findAll({
-      where: {
-        userId: req.user.id,
-        date: {
-          [Op.between]: [startDate, endDate]  // Sequelize date range filter
-        }
-      }
+    const transactions = await Transaction.find({
+      userId: req.user.id,
+      date: { $gte: startDate, $lte: endDate },
     });
 
     const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
@@ -56,13 +51,9 @@ exports.generateCashFlowStatement = async (req, res) => {
     const { startDate, endDate, format } = req.query;
 
     // Fetch transactions within the date range for the user
-    const transactions = await Transaction.findAll({
-      where: {
-        userId: req.user.id,
-        date: {
-          [Op.between]: [startDate, endDate]  // Sequelize date range filter
-        }
-      }
+    const transactions = await Transaction.find({
+      userId: req.user.id,
+      date: { $gte: startDate, $lte: endDate },
     });
 
     const cashInflows = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
@@ -104,13 +95,9 @@ exports.generateBalanceSheet = async (req, res) => {
     const { date, format } = req.query;
 
     // Fetch transactions up to the given date for the user
-    const transactions = await Transaction.findAll({
-      where: {
-        userId: req.user.id,
-        date: {
-          [Op.lte]: date  // Date less than or equal to the given date
-        }
-      }
+    const transactions = await Transaction.find({
+      userId: req.user.id,
+      date: { $lte: date },
     });
 
     const assets = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);

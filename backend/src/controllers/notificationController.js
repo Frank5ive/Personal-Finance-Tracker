@@ -4,12 +4,13 @@ const Notification = require('../models/Notification');
 exports.createNotification = async (req, res) => {
   try {
     const { userId, title, message, type } = req.body;
-    const notification = await Notification.create({
+    const notification = new Notification({
       userId,
       title,
       message,
       type,
     });
+    await notification.save();
     res.status(201).json(notification);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create notification' });
@@ -20,7 +21,7 @@ exports.createNotification = async (req, res) => {
 exports.deleteNotification = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await Notification.destroy({ where: { id } });
+    const result = await Notification.findByIdAndDelete(id);
 
     if (result) {
       res.status(200).json({ message: 'Notification deleted successfully' });
@@ -36,10 +37,7 @@ exports.deleteNotification = async (req, res) => {
 exports.getNotifications = async (req, res) => {
   try {
     const { userId } = req.params;
-    const notifications = await Notification.findAll({
-      where: { userId },
-      order: [['date', 'DESC']],
-    });
+    const notifications = await Notification.find({ userId }).sort({ date: -1 });
     res.status(200).json(notifications);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch notifications' });

@@ -1,36 +1,31 @@
-const { DataTypes } = require('sequelize');
-const db = require('../config/db');
+const mongoose = require('mongoose');
 
-const Transaction = db.define('Transaction', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
+const transactionSchema = new mongoose.Schema({
   userId: {
-    type: DataTypes.UUID,
-    allowNull: false,
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
   },
   type: {
-    type: DataTypes.ENUM('income', 'expense'),
-    allowNull: false,
+    type: String,
+    enum: ['income', 'expense'],
+    required: true,
   },
   amount: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
+    type: Number,
+    required: true,
   },
   category: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   description: {
-    type: DataTypes.STRING,
-    allowNull: true,
+    type: String,
+    default: '',
   },
   date: {
-    type: DataTypes.DATEONLY,
-    defaultValue: DataTypes.NOW,
+    type: Date,
+    default: Date.now,
   },
 });
 
-module.exports = Transaction;
+module.exports = mongoose.model('Transaction', transactionSchema);

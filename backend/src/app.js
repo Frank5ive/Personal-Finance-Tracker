@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const sequelize = require("./config/db");  // Sequelize connection
+const mongoose = require("mongoose");  // Mongoose connection
+require("dotenv").config();  // Load environment variables
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const transactions = require("./routes/transactionRoutes");
@@ -18,16 +19,19 @@ app.use(cors({
 
 app.use(express.json());
 
-// Test Database Connection and Sync Models
-(async () => {
-  try {
-    await sequelize.sync(); // Sync models with DB
-    console.log("Database synchronized successfully");
-  } catch (err) {
-    console.error("Database sync error:", err.message);
-    process.exit(1); // Exit if sync fails
-  }
-})();
+// Connect to MongoDB
+const dbUrl = process.env.DB_URL;
+if (!dbUrl) {
+  console.error("MongoDB connection error: DB_URL is not defined in the environment variables.");
+  process.exit(1);
+}
+
+mongoose.connect(dbUrl).then(() => {
+  console.log("Connected to MongoDB");
+}).catch((err) => {
+  console.error("MongoDB connection error:", err.message);
+  process.exit(1); // Exit if connection fails
+});
 
 // Health Check Route
 app.get("/", (req, res) => {

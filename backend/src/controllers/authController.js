@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
     }
 
     // Check if user exists
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email is already registered" });
     }
@@ -21,15 +21,16 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const user = await User.create({
+    const user = new User({
       username,
       email,
       password_hash: hashedPassword,
     });
+    await user.save();
 
     res.status(201).json({
       message: "User registered successfully",
-      user: { id: user.id, username, email },
+      user: { id: user._id, username, email },
     });
   } catch (error) {
     console.error("Error in registerUser:", error);
@@ -47,7 +48,7 @@ const loginUser = async (req, res) => {
     }
 
     // Check if user exists
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -66,7 +67,7 @@ const loginUser = async (req, res) => {
       message: "Login successful",
       token,
       user: {
-        id: user.id,
+        id: user._id,
         username: user.username,
         email: user.email,
         createdAt: user.createdAt,
